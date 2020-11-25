@@ -1,6 +1,7 @@
 require 'sidekiq'
 require 'sidekiq/api'
 require 'singleton'
+require 'sidekiq_alive/file'
 require 'sidekiq_alive/version'
 require 'sidekiq_alive/config'
 
@@ -17,8 +18,8 @@ module SidekiqAlive
           sa.register_current_instance
           sa.store_alive_key
           sa::Worker.perform_async(hostname)
-          @server_pid = fork do
-            sa::Server.run!
+          Thread.new do
+            sa::File.run!
           end
           sa.logger.info(successful_startup_text)
         end
@@ -126,7 +127,6 @@ module SidekiqAlive
 
     Hostname: #{hostname}
     Liveness key: #{current_lifeness_key}
-    Port: #{config.port}
     Time to live: #{config.time_to_live}s
     Current instance register key: #{current_instance_register_key}
     Worker running on queue: #{@queue}
@@ -154,6 +154,5 @@ module SidekiqAlive
 end
 
 require 'sidekiq_alive/worker'
-require 'sidekiq_alive/server'
 
 SidekiqAlive.start unless ENV['DISABLE_SIDEKIQ_ALIVE']
