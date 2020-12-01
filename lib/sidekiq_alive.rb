@@ -1,7 +1,6 @@
 require 'sidekiq'
 require 'sidekiq/api'
 require 'singleton'
-require 'sidekiq_alive/file'
 require 'sidekiq_alive/version'
 require 'sidekiq_alive/config'
 
@@ -18,9 +17,6 @@ module SidekiqAlive
           sa.register_current_instance
           sa.store_alive_key
           sa::Worker.perform_async(hostname)
-          Thread.new do
-            sa::File.run!
-          end
           sa.logger.info(successful_startup_text)
         end
       end
