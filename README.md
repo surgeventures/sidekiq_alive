@@ -1,13 +1,15 @@
 # SidekiqAlive
 
-[![Build Status](https://travis-ci.org/arturictus/sidekiq_alive.svg?branch=master)](https://travis-ci.org/arturictus/sidekiq_alive)
-[![Maintainability](https://api.codeclimate.com/v1/badges/35c39124564ffeb0ce4e/maintainability)](https://codeclimate.com/github/arturictus/sidekiq_alive/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/35c39124564ffeb0ce4e/test_coverage)](https://codeclimate.com/github/arturictus/sidekiq_alive/test_coverage)
+[![Gem Version](https://badge.fury.io/rb/sidekiq_alive.svg)](https://rubygems.org/gems/sidekiq_alive)
+[![Total Downloads](https://img.shields.io/gem/dt/sidekiq_alive?color=blue)](https://rubygems.org/gems/https://rubygems.org/gems/sidekiq_alive)
+![Workflow status](https://github.com/allure-framework/allure-ruby/workflows/Test/badge.svg)
+
+---
 
 SidekiqAlive offers a solution to add liveness probe for a Sidekiq instance deployed in Kubernetes.
 This library can be used to check sidekiq health outside kubernetes.
 
-__How?__
+**How?**
 
 A http server is started and on each requests validates that a liveness key is stored in Redis. If it is there means is working.
 
@@ -52,7 +54,6 @@ Or install it yourself as:
 
     $ gem install sidekiq_alive
 
-
 ## Usage
 
 SidekiqAlive will start when running `sidekiq` command.
@@ -68,8 +69,7 @@ curl localhost:7433
 #=> Alive!
 ```
 
-
-__how to disable?__
+**how to disable?**
 You can disabled by setting `ENV` variable `DISABLE_SIDEKIQ_ALIVE`
 example:
 
@@ -115,7 +115,7 @@ spec:
         preStop:
           exec:
             # SIGTERM triggers a quick exit; gracefully terminate instead
-            command: ["bundle", "exec", "sidekiqctl", "quiet"]
+            command: ['bundle', 'exec', 'sidekiqctl', 'quiet']
   terminationGracePeriodSeconds: 60 # put your longest Job time here plus security time.
 ```
 
@@ -172,7 +172,7 @@ spec:
         preStop:
           exec:
             # SIGTERM triggers a quick exit; gracefully terminate instead
-            command: ["kube/sidekiq_quiet"]
+            command: ['kube/sidekiq_quiet']
   terminationGracePeriodSeconds: 60 # put your longest Job time here plus security time.
 ```
 
@@ -196,6 +196,13 @@ curl localhost:7433
 
 ```ruby
 SidekiqAlive.setup do |config|
+  # ==> Server host
+  # Host to bind the server.
+  # Can also be set with the environment variable SIDEKIQ_ALIVE_HOST.
+  # default: 0.0.0.0
+  #
+  #   config.host = 0.0.0.0
+
   # ==> Server port
   # Port to bind the server.
   # Can also be set with the environment variable SIDEKIQ_ALIVE_PORT.
@@ -209,6 +216,13 @@ SidekiqAlive.setup do |config|
   # default: '/'
   #
   #   config.path = '/'
+
+  # ==> Custom Liveness Probe
+  # Extra check to decide if restart the pod or not for example connection to DB.
+  # `false`, `nil` or `raise` will not write the liveness probe
+  # default: proc { true }
+  #
+  #     config.custom_liveness_probe = proc { db_running? }
 
   # ==> Liveness key
   # Key to be stored in Redis as probe of liveness
@@ -232,11 +246,19 @@ SidekiqAlive.setup do |config|
   #    require 'net/http'
   #    config.callback = proc { Net::HTTP.get("https://status.com/ping") }
 
+  # ==> Shutdown callback
+  # When sidekiq process is shutting down, you can perform some action, like cleaning up created queue
+  # default: proc {}
+  #
+  #    config.shutdown_callback = proc do
+  #      Sidekiq::Queue.all.find { |q| q.name == "#{config.queue_prefix}-#{SidekiqAlive.hostname}" }&.clear
+  #    end
+
   # ==> Queue Prefix
   # SidekiqAlive will run in a independent queue for each instance/replica
   # This queue name will be generated with: "#{queue_prefix}-#{hostname}.
   # You can customize the prefix here.
-  # default: :sidekiq_alive
+  # default: :sidekiq-alive
   #
   #    config.queue_prefix = :other
 

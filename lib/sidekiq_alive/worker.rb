@@ -1,18 +1,19 @@
+# frozen_string_literal: true
+
 module SidekiqAlive
   class Worker
     include Sidekiq::Worker
     sidekiq_options retry: false
 
+    # Passing the hostname argument it's only for debugging enqueued jobs
     def perform(_hostname = SidekiqAlive.hostname)
-      write_living_probe
-      # schedule next living probe
-      self.class.perform_in(config.time_to_live / 2, current_hostname)
-    end
+      # Checks if custom liveness probe passes should fail or return false
+      return unless config.custom_liveness_probe.call
 
-    def hostname_registered?(hostname)
-      SidekiqAlive.registered_instances.any? do |ri|
-        /#{hostname}/ =~ ri
-      end
+      # Writes the liveness in Redis
+      write_living_probe
+      # schedules next living probe
+      self.class.perform_in(config.time_to_live / 2, current_hostname)
     end
 
     def write_living_probe
