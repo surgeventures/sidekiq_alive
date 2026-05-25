@@ -1,0 +1,39 @@
+version: 1
+generated_at: 2026-05-25T13:04:42Z
+internal: []
+trusted:
+  - action: actions/checkout
+    refs:
+      - v4
+    occurrences:
+      v4:
+        .github/workflows/changelog.yml:
+          - jobs.release.steps.[0].uses
+        .github/workflows/release.yml:
+          - jobs.release.steps.[0].uses
+        .github/workflows/test.yml:
+          - jobs.rubocop.steps.[0].uses
+          - jobs.coverage.steps.[0].uses
+          - jobs.test.steps.[0].uses
+external:
+  - action: ruby/setup-ruby
+    refs:
+      - v1
+    occurrences:
+      v1:
+        .github/workflows/release.yml:
+          - jobs.release.steps.[1].uses
+        .github/workflows/test.yml:
+          - jobs.rubocop.steps.[1].uses
+          - jobs.coverage.steps.[1].uses
+          - jobs.test.steps.[1].uses
+  - action: softprops/action-gh-release
+    refs:
+      - v1
+    occurrences:
+      v1:
+        .github/workflows/changelog.yml:
+          - jobs.release.steps.[1].uses
+local: []
+docker: []
+dynamic: []
