@@ -21,7 +21,7 @@ jobs:
           ssh-key: ${{ secrets.RELEASE_SSH_KEY }}
       -
         name: Set up Ruby 3.1
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@afeafc3d1ab54a631816aba4c914a0081c12ff2f # v1
         with:
           bundler-cache: true
       -
