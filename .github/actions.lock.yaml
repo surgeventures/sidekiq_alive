@@ -1,5 +1,5 @@
 version: 1
-generated_at: 2026-05-25T13:04:42Z
+generated_at: 2026-05-25T15:32:28Z
 internal: []
 trusted:
   - action: actions/checkout
@@ -18,9 +18,9 @@ trusted:
 external:
   - action: ruby/setup-ruby
     refs:
-      - v1
+      - afeafc3d1ab54a631816aba4c914a0081c12ff2f
     occurrences:
-      v1:
+      afeafc3d1ab54a631816aba4c914a0081c12ff2f:
         .github/workflows/release.yml:
           - jobs.release.steps.[1].uses
         .github/workflows/test.yml:
@@ -29,9 +29,9 @@ external:
           - jobs.test.steps.[1].uses
   - action: softprops/action-gh-release
     refs:
-      - v1
+      - de2c0eb89ae2a093876385947365aca7b0e5f844
     occurrences:
-      v1:
+      de2c0eb89ae2a093876385947365aca7b0e5f844:
         .github/workflows/changelog.yml:
           - jobs.release.steps.[1].uses
 local: []
